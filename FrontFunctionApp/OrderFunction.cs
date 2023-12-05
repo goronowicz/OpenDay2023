@@ -9,7 +9,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker.Extensions.Tables;
 using ITableEntity = Azure.Data.Tables.ITableEntity;
-//using Azure.Messaging;
+
 
 namespace FrontFunctionApp
 {
@@ -40,12 +40,13 @@ namespace FrontFunctionApp
             };
             var status = await orders.AddEntityAsync(orderData);
 
+            var httpResponseData = req.CreateResponse(HttpStatusCode.OK);
+            await httpResponseData.WriteAsJsonAsync(orderData);
+
             return new OrderResponse()
             {
-                HttpResponse =
-                    req.CreateResponse(HttpStatusCode.OK),
+                HttpResponse = httpResponseData,
                 orderData = new EventGridEvent("Integration", nameof(EventGridEvent), "1.0", orderData, typeof(OrderData))
-
             };
         }
     }
